@@ -27,17 +27,18 @@ def predict_rub_salary_hh(vacancy):
             if salary['from'] and salary['to']:
                 if salary['from'] < 1000:
                     salary['from'] *= 1000
-                if salary['to'] < 1000: 
-                    salary['to'] *= 1000    
+                if salary['to'] < 1000:
+                    salary['to'] *= 1000
                 return (salary['from'] + salary['to']) / 2
             elif salary['from']:
                 if salary['from'] < 1000:
                     salary['from'] *= 1000
                 return salary['from'] * 1.2
             elif salary['to']:
-                if salary['to'] < 1000: 
+                if salary['to'] < 1000:
                     salary['to'] *= 1000
-                return salary['to'] * 0.8        
+                return salary['to'] * 0.8
+
 
 def predict_rub_salary_sj(payment_from, payment_to):
     if payment_from and payment_to:
@@ -45,7 +46,8 @@ def predict_rub_salary_sj(payment_from, payment_to):
     elif payment_from:
         return int(payment_from * 1.2)
     elif payment_to:
-        return int(payment_to * 0.8)      
+        return int(payment_to * 0.8)
+
 
 def get_info_from_hh(template):
     key_word = 'Программист'
@@ -67,21 +69,23 @@ def get_info_from_hh(template):
             if response.ok:
                 vacancies.extend(response.json()['items'])
                 page += 1
-                pages_number = response.json()['pages'] 
+                pages_number = response.json()['pages']
         result[language]['vacancies_found'] = response.json()['found']
         for vacancy in vacancies:
             if predict_rub_salary_hh(vacancy):
                 result[language]['average_salary'] += predict_rub_salary_hh(vacancy)
-                result[language]['vacancies_processed'] += 1   
-        result[language]['average_salary'] = int(result[language]['average_salary']/result[language]['vacancies_processed'])
+                result[language]['vacancies_processed'] += 1
+        result[language]['average_salary'] = \
+        int(result[language]['average_salary']/result[language]['vacancies_processed'])
     return result
+
 
 def get_info_from_sj(template):
     load_dotenv()
     token = os.environ['TOKEN']
     url = 'https://api.superjob.ru/2.0/vacancies/'
     auth_token = {
-    'X-Api-App-Id': '{}'.format(token)
+        'X-Api-App-Id': '{}'.format(token)
     }
     url_params = {
         'town': 4,
@@ -102,7 +106,7 @@ def get_info_from_sj(template):
                 for item in response.json()['objects']:
                         vacancies.append(item)
                 page += url_params['count']
-        result[language]['vacancies_found'] = response.json()['total']    
+        result[language]['vacancies_found'] = response.json()['total']
         for vacancy in vacancies:
             salary = predict_rub_salary_sj(vacancy['payment_from'], vacancy['payment_to'])
             if salary:
@@ -111,12 +115,18 @@ def get_info_from_sj(template):
         try:
             result[language]['average_salary'] = int(result[language]['average_salary']/result[language]['vacancies_processed'])
         except ZeroDivisionError:
-            result[language]['average_salary'] = 0              
+            result[language]['average_salary'] = 0
     return result
+
 
 def print_vacancy_info(title, vacancy_info):
     table_data = [
-    ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']
+    [
+        'Язык программирования',
+        'Вакансий найдено',
+        'Вакансий обработано',
+        'Средняя зарплата'
+    ]
     ]
     for language in vacancy_info:
         table_data.append([
@@ -132,11 +142,10 @@ def print_vacancy_info(title, vacancy_info):
 if __name__ == '__main__':
 
     template = {language: {
-    'vacancies_found': 0,
-    'vacancies_processed': 0,
-    'average_salary': 0
+        'vacancies_found': 0,
+        'vacancies_processed': 0,
+        'average_salary': 0
     } for language in PROGRAMMING_LANGUAGES}
 
-    print_vacancy_info('HeadHunter Moscow', get_info_from_hh(template) )
+    print_vacancy_info('HeadHunter Moscow', get_info_from_hh(template))
     print_vacancy_info('SuperJob Moscow', get_info_from_sj(template))
-
