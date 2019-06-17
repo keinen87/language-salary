@@ -22,7 +22,7 @@ def predict_rub_salary_hh(vacancy):
                 return salary['to'] * 0.8
 
 
-def get_info_from_hh():
+def get_vacancies_from_hh(language):
     key_word = 'Программист'
     url = 'https://api.hh.ru/vacancies'
     url_params = {
@@ -30,26 +30,35 @@ def get_info_from_hh():
         'area': '1',
         'period': '30'
         }
+    url_params['text'] = '{} {}'.format(key_word, language)
+    vacancies = {'items': []}
+    page = 0
+    pages_number = 100
+    while page < pages_number:
+        url_params['page'] = page
+        response = requests.get(url, url_params)
+        if response.ok:
+            vacancies['found'] = response.json()['found']
+            vacancies['items'].extend(response.json()['items'])
+            page += 1
+            pages_number = response.json()['pages']
+    return vacancies
+
+
+def get_json_info_from_vacancies_hh():
     result = TEMPLATE
     for language in PROGRAMMING_LANGUAGES:
+        vacancies = get_vacancies_from_hh(language)
         result[language]['vacancies_processed'] = 0
         result[language]['average_salary'] = 0
-        url_params['text'] = '{} {}'.format(key_word, language)
-        page = 0
-        pages_number = 100
-        vacancies = []
-        while page < pages_number:
-            url_params['page'] = page
-            response = requests.get(url, url_params)
-            if response.ok:
-                vacancies.extend(response.json()['items'])
-                page += 1
-                pages_number = response.json()['pages']
-        result[language]['vacancies_found'] = response.json()['found']
-        for vacancy in vacancies:
+        result[language]['vacancies_found'] = vacancies['found']
+        for vacancy in vacancies['items']:
             if predict_rub_salary_hh(vacancy):
                 result[language]['average_salary'] += predict_rub_salary_hh(vacancy)
                 result[language]['vacancies_processed'] += 1
-        result[language]['average_salary'] = \
-        int(result[language]['average_salary']/result[language]['vacancies_processed'])
-    return result                
+        try:
+            result[language]['average_salary'] = \
+                int(result[language]['average_salary']/result[language]['vacancies_processed'])
+        except ZeroDivisionError:
+            result[language]['average_salary'] = 0
+    return result
