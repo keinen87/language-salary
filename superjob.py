@@ -24,7 +24,6 @@ def get_info_from_sj():
         'town': 4,
         'catalogues': 48,
         'currency': 'rub',
-        'period': 30,
         'page': 0,
         'count': 100
         }
