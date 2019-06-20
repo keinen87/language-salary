@@ -1,7 +1,7 @@
 import requests
 
 
-def get_vacancies_from_hh(language):
+def extract_vacancies_from_hh(language):
     key_word = 'Программист'
     url = 'https://api.hh.ru/vacancies'
     url_params = {
@@ -19,6 +19,23 @@ def get_vacancies_from_hh(language):
         if response.ok:
             vacancies['total'] = response.json()['found']
             vacancies['objects'].extend(response.json()['items'])
+            for vacancy in vacancies['objects']:
+                if vacancy['salary']:
+                    vacancy['currency'] = vacancy['salary']['currency']
+                    if vacancy['salary']['from'] and \
+                            vacancy['salary']['from'] < 1000:
+                        vacancy['from'] = vacancy['salary']['from'] * 1000
+                    else:
+                        vacancy['from'] = vacancy['salary']['from']
+                    if vacancy['salary']['to'] and \
+                            vacancy['salary']['to'] < 1000:
+                        vacancy['to'] = vacancy['salary']['to'] * 1000
+                    else:
+                        vacancy['to'] = vacancy['salary']['to']
+                else:
+                    vacancy['currency'] = None
+                    vacancy['from'] = None
+                    vacancy['to'] = None
             page += 1
             pages_number = response.json()['pages']
     return vacancies
