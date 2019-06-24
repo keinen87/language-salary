@@ -1,7 +1,22 @@
-from head_hunter import extract_vacancies_from_hh
-from settings import PROGRAMMING_LANGUAGES, TEMPLATE
-from superjob import extract_vacancies_from_sj
+from head_hunter import get_vacancies_from_hh, extract_vacancies_from_hh
+from superjob import get_vacancies_from_sj, extract_vacancies_from_sj
 from terminaltables import SingleTable
+
+PROGRAMMING_LANGUAGES = [
+    'JavaScript',
+    'Java',
+    'Python',
+    'Ruby',
+    'PHP',
+    'C++',
+    'C#',
+    'C',
+    'Go',
+    'Objective-C',
+    'Scala',
+    'Swift',
+    'Typescript'
+]
 
 
 def predict_rub_salary(pay_from, pay_to):
@@ -14,22 +29,22 @@ def predict_rub_salary(pay_from, pay_to):
 
 
 def get_json_info_from_vacancies(language, vacancies):
-    result = TEMPLATE
-    result[language]['vacancies_found'] = vacancies['total']
-    result[language]['vacancies_processed'] = 0
-    result[language]['average_salary'] = 0
+    result = {}
+    result['vacancies_found'] = vacancies['total']
+    result['vacancies_processed'] = 0
+    result['average_salary'] = 0
     for vacancy in vacancies['objects']:
         if vacancy['currency'] and \
-               vacancy['currency'] == 'RUR' or 'rub':
+               vacancy['currency'] in ['RUR', 'rub']:
             salary = predict_rub_salary(vacancy['from'], vacancy['to'])
             if salary:
-                result[language]['average_salary'] += salary
-                result[language]['vacancies_processed'] += 1
+                result['average_salary'] += salary
+                result['vacancies_processed'] += 1
     try:
-        result[language]['average_salary'] = \
-            int(result[language]['average_salary']/result[language]['vacancies_processed'])
+        result['average_salary'] = \
+            int(result['average_salary']/result['vacancies_processed'])
     except ZeroDivisionError:
-        result[language]['average_salary'] = 0
+        result['average_salary'] = 0
     return result
 
 
@@ -54,11 +69,15 @@ def print_vacancy_info(title, vacancies):
     print()
 
 if __name__ == '__main__':
-    result_from_hh = result_from_sj = TEMPLATE
+    result_from_hh = {}
+    result_from_sj = {}
     for language in PROGRAMMING_LANGUAGES:
-        vacancies_from_hh = extract_vacancies_from_hh(language)
-        vacancies_from_sj = extract_vacancies_from_sj(language)
-        result_from_hh.update(get_json_info_from_vacancies(language, vacancies_from_hh))
-        result_from_sj.update(get_json_info_from_vacancies(language, vacancies_from_sj))
+        vacancies_list_from_hh = get_vacancies_from_hh(language)
+        vacancies_from_hh = extract_vacancies_from_hh(vacancies_list_from_hh)
+        vacancies_list_from_sj = get_vacancies_from_sj(language)
+        vacancies_from_sj = extract_vacancies_from_sj(vacancies_list_from_sj)
+        result_from_hh[language] = get_json_info_from_vacancies(language, vacancies_from_hh)
+        result_from_sj[language] = get_json_info_from_vacancies(language, vacancies_from_sj)
+
     print_vacancy_info('HeadHunter Moscow', result_from_hh)
     print_vacancy_info('SuperJob Moscow', result_from_sj)
