@@ -22,7 +22,8 @@ TOKEN=v3.r.122857201.8f0cg543b36467ef22c8a234ae54290f700f836c.804fhh73cce5e8hgyr
 ```
 ### How to get
 
-* Register an application [API Superjob](https://api.superjob.ru/) and get the `Secret Key`
+* Register an application [API Superjob](https://api.superjob.ru/) and get the `Secret Key`:
+![](api_superjob_settings.png)
 
 
 ### Run
