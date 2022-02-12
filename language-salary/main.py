@@ -28,7 +28,7 @@ def predict_rub_salary(pay_from, pay_to):
         return pay_to * 0.8
 
 
-def get_json_info_from_vacancies(language, vacancies):
+def get_statistic(vacancies):
     result = {}
     result['vacancies_found'] = vacancies['total']
     result['vacancies_processed'] = 0
@@ -76,8 +76,8 @@ if __name__ == '__main__':
         vacancies_from_hh = extract_vacancies_from_hh(vacancies_list_from_hh)
         vacancies_list_from_sj = get_vacancies_from_sj(language)
         vacancies_from_sj = extract_vacancies_from_sj(vacancies_list_from_sj)
-        result_from_hh[language] = get_json_info_from_vacancies(language, vacancies_from_hh)
-        result_from_sj[language] = get_json_info_from_vacancies(language, vacancies_from_sj)
+        result_from_hh[language] = get_statistic(vacancies_from_hh)
+        result_from_sj[language] = get_statistic(vacancies_from_sj)
 
     print_vacancy_info('HeadHunter Moscow', result_from_hh)
     print_vacancy_info('SuperJob Moscow', result_from_sj)
