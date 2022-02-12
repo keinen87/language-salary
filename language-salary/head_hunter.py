@@ -8,22 +8,22 @@ def get_vacancies_from_hh(language):
         'area': '1',
         'period': '30'
         }
-    vacancies_list = []
+    vacancies = []
     page = 0
     pages_number = 100
     while page < pages_number:
         url_params['page'] = page
         response = requests.get(url, url_params)
         response.raise_for_status()
-        vacancies_list.append(response.json())
+        vacancies.append(response.json())
         page += 1
         pages_number = response.json()['pages']
-    return vacancies_list
+    return vacancies
 
 
-def extract_vacancies_from_hh(vacancies_list):
+def extract_vacancies_from_hh(vacancies):
     vacancies = {'objects': []}
-    for scope_vacancies in vacancies_list:
+    for scope_vacancies in vacancies:
         vacancies['objects'].extend(scope_vacancies['items'])
         vacancies['total'] = scope_vacancies['found']
     for vacancy in vacancies['objects']:
