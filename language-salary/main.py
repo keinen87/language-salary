@@ -72,10 +72,10 @@ if __name__ == '__main__':
     result_from_hh = {}
     result_from_sj = {}
     for language in PROGRAMMING_LANGUAGES:
-        vacancies_list_from_hh = get_vacancies_from_hh(language)
-        vacancies_from_hh = extract_vacancies_from_hh(vacancies_list_from_hh)
-        vacancies_list_from_sj = get_vacancies_from_sj(language)
-        vacancies_from_sj = extract_vacancies_from_sj(vacancies_list_from_sj)
+        vacancies_from_hh = get_vacancies_from_hh(language)
+        vacancies_from_hh = extract_vacancies_from_hh(vacancies_from_hh)
+        vacancies_from_sj = get_vacancies_from_sj(language)
+        vacancies_from_sj = extract_vacancies_from_sj(vacancies_from_sj)
         result_from_hh[language] = get_statistic(vacancies_from_hh)
         result_from_sj[language] = get_statistic(vacancies_from_sj)
 
