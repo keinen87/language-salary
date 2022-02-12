@@ -2,14 +2,12 @@ import requests
 
 
 def get_vacancies_from_hh(language):
-    key_word = 'Программист'
     url = 'https://api.hh.ru/vacancies'
     url_params = {
-        'text': '',
+        'text': f'Программист {language}',
         'area': '1',
         'period': '30'
         }
-    url_params['text'] = '{} {}'.format(key_word, language)
     vacancies_list = []
     page = 0
     pages_number = 100
