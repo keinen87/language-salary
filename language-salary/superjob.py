@@ -11,13 +11,13 @@ def get_vacancies_from_sj(language):
         'X-Api-App-Id': '{}'.format(token)
     }
     url_params = {
+        'keyword': language,
         'town': 4,
         'catalogues': 48,
         'currency': 'rub',
         'page': 0,
         'count': 100
         }
-    url_params['keyword'] = language
     vacancies_list = []
     page = 0
     pages_number = 1
