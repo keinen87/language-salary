@@ -21,9 +21,9 @@ def get_vacancies_from_hh(language):
     return vacancies
 
 
-def extract_vacancies_from_hh(vacancies):
+def extract_vacancies_from_hh(pages):
     vacancies = {'objects': []}
-    for scope_vacancies in vacancies:
+    for scope_vacancies in pages:
         vacancies['objects'].extend(scope_vacancies['items'])
         vacancies['total'] = scope_vacancies['found']
     for vacancy in vacancies['objects']:

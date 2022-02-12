@@ -35,9 +35,9 @@ def get_vacancies_from_sj(language):
     return vacancies
 
 
-def extract_vacancies_from_sj(vacancies):
+def extract_vacancies_from_sj(pages):
     vacancies = {'objects': []}
-    for scope_vacancies in vacancies:
+    for scope_vacancies in pages:
         vacancies['objects'].extend(scope_vacancies['objects'])
         vacancies['total'] = scope_vacancies['total']
     for vacancy in vacancies['objects']:
