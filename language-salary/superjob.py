@@ -18,13 +18,13 @@ def get_vacancies_from_sj(language):
         'page': 0,
         'count': 100
         }
-    vacancies_list = []
+    vacancies = []
     page = 0
     pages_number = 1
     while page < pages_number:
         response = requests.get(url, params=url_params, headers=auth_token)
         response.raise_for_status()
-        vacancies_list.append(response.json())
+        vacancies.append(response.json())
         total = response.json()['total']
         if total <= url_params['count']:
             page += 1
@@ -32,12 +32,12 @@ def get_vacancies_from_sj(language):
             total -= url_params['count']
             pages_number += 1
             page += 1
-    return vacancies_list
+    return vacancies
 
 
-def extract_vacancies_from_sj(vacancies_list):
+def extract_vacancies_from_sj(vacancies):
     vacancies = {'objects': []}
-    for scope_vacancies in vacancies_list:
+    for scope_vacancies in vacancies:
         vacancies['objects'].extend(scope_vacancies['objects'])
         vacancies['total'] = scope_vacancies['total']
     for vacancy in vacancies['objects']:
